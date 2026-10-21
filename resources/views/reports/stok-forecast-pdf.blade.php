@@ -33,6 +33,7 @@
                 <th rowspan="2">No.</th>
                 <th rowspan="2">Kode</th>
                 <th rowspan="2">Nama Produk</th>
+                <th rowspan="2" class="num">SL</th>
                 <th rowspan="2" class="num">Batch Size</th>
                 @foreach ($groups as $glabel => $subs)
                     @if (count($subs) === 1)
@@ -60,26 +61,29 @@
                     <td>{{ $i + 1 }}</td>
                     <td>{{ $row->kode }}</td>
                     <td>{{ $row->nama }}</td>
+                    <td class="num">{{ $row->sl !== null ? Fmt::num($row->sl, 0) : '–' }}</td>
                     <td class="num">{{ Fmt::num($row->batch_size, 0) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->forecast, 0) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->pengeluaran, 0) }}</td>
-                    <td class="num">{{ Fmt::ratio($row->persen, 1) }}</td>
+                    <td class="num" @if ($row->persen !== null && (float) $row->persen > 100) style="background: #86efac;" @endif>{{ Fmt::ratio($row->persen, 1) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->ed_lt9, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->ed_gte9, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->total_stok, 0) }}</td>
-                    <td class="num">{{ Fmt::num($row->doi ?? 0, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->doi ?? 0, 1) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->outstanding, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->freestock, 0) }}</td>
-                    <td class="num">{{ Fmt::num($row->doi_free ?? 0, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->doi_free ?? 0, 1) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->fg_karantina, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->freestock_kar, 0) }}</td>
-                    <td class="num">{{ Fmt::num($row->doi_kar ?? 0, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->doi_kar ?? 0, 1) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->size_wip, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->akt_wip, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->freestock_wip, 0) }}</td>
-                    <td class="num">{{ Fmt::num($row->doi_wip ?? 0, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->doi_wip ?? 0, 1) }}</td>
                     <td class="num gstart">{{ Fmt::num($row->size_br_belum_proses, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->akt_belum, 0) }}</td>
                     <td class="num">{{ Fmt::num($row->freestock_bp, 0) }}</td>
-                    <td class="num">{{ Fmt::num($row->doi_bp ?? 0, 0) }}</td>
+                    <td class="num">{{ Fmt::num($row->doi_bp ?? 0, 1) }}</td>
                 </tr>
             @endforeach
         </tbody>

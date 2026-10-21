@@ -12,10 +12,13 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // REGISTRASI PUBLIK DIMATIKAN (2026-09-28) — aplikasi menghadap internet & datanya rahasia.
+    // Sebelumnya route ini terbuka sehingga bot bisa mendaftar sendiri lalu login (lihat login_logs
+    // IP 192.3.241.150, curl). Pembuatan user KINI HANYA lewat admin (UserManager di /users).
+    // Jangan aktifkan kembali tanpa proteksi (mis. invite/undangan admin).
+    //
+    // Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    // Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');

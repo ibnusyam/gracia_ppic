@@ -12,7 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Aplikasi dijalankan di belakang reverse proxy nginx (port 5000),
+        // jadi header X-Forwarded-* dari proxy lokal dipercaya.
+        $middleware->trustProxies(at: [
+            '127.0.0.1',
+            '::1',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

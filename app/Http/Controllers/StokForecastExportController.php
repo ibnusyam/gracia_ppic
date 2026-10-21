@@ -16,6 +16,7 @@ class StokForecastExportController extends Controller
             'month'     => (string) $request->query('month', ''),
             'search'    => (string) $request->query('search', ''),
             'category'  => (string) $request->query('category', 'all'),
+            'status'    => (string) $request->query('status', StokForecastReport::STATUS_DEFAULT),
             'edMonths'  => (int) $request->query('ed_months', StokForecastReport::ED_MONTHS_DEFAULT),
             'sortField' => (string) $request->query('sort_field', 'nama'),
             'sortDir'   => (string) $request->query('sort_dir', 'asc'),
@@ -28,7 +29,7 @@ class StokForecastExportController extends Controller
         $filename = 'monitoring-stok-forecast-'.now()->format('Ymd-His').'.xlsx';
 
         return Excel::download(
-            new StokForecastExport($p['month'], $p['search'], $p['sortField'], $p['sortDir'], $p['category'], $p['edMonths']),
+            new StokForecastExport($p['month'], $p['search'], $p['sortField'], $p['sortDir'], $p['category'], $p['edMonths'], $p['status']),
             $filename
         );
     }
@@ -37,7 +38,7 @@ class StokForecastExportController extends Controller
     {
         $p = $this->params($request);
         $rows = StokForecastReport::arrange(
-            (new StokForecastReport())->rows($p['month'], $p['edMonths']),
+            (new StokForecastReport())->rows($p['month'], $p['edMonths'], $p['status']),
             $p['search'], $p['sortField'], $p['sortDir'], $p['category']
         );
 

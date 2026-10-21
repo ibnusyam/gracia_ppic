@@ -4,13 +4,15 @@ use App\Http\Controllers\MonitoringStokExportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StokForecastExportController;
 use App\Http\Controllers\WipBelumProsesExportController;
+use App\Livewire\LoginLogTable;
 use App\Livewire\StokForecastTable;
 use App\Livewire\TollOutManager;
+use App\Livewire\UserManager;
 use App\Livewire\WipBelumProsesTable;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('reports.wip-belum-proses');
+    return redirect()->route('reports.stok-forecast');
 });
 
 Route::middleware('auth')->group(function () {
@@ -31,6 +33,12 @@ Route::middleware('auth')->group(function () {
 
     // Kelola daftar produk Toll Out (makloon) — dipakai utk highlight di Monitoring Stok.
     Route::get('/reports/toll-out', TollOutManager::class)->name('reports.toll-out');
+
+    // Khusus admin: log aktivitas login & kelola user.
+    Route::middleware('can:admin')->group(function () {
+        Route::get('/log-login', LoginLogTable::class)->name('log-login');
+        Route::get('/users', UserManager::class)->name('users');
+    });
 });
 
 require __DIR__.'/auth.php';

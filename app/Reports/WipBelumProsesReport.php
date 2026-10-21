@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * Definisi status batch (sama seperti StokForecastReport):
  *  - BR Belum Proses = penyerahan BELUM (tgl_penyerahan NULL) & karantina BELUM terisi.
  *  - WIP             = penyerahan SUDAH (tgl_penyerahan terisi) & karantina BELUM terisi.
- *  - Batch Size = master_formula_barang_jadi.jumlah_fb (formula TERBARU per produk); tanpa formula = 0.
+ *  - Batch Size      = master_batch.batch_aktual (batch size aktual per batch; NULL -> 0).
  *
  * ATURAN (DB legacy gracia_mrp, PostgreSQL 8.4, READ-ONLY):
  *  - Rentang tanggal inklusif: tgl_input >= :from s/d <= :to (dipakai < :to + 1 hari).
@@ -38,29 +38,21 @@ class WipBelumProsesReport
                    m.tgl_expired,
                    b.kode,
                    TRIM(b.nama || ' ' || COALESCE(bs.nama, '')) AS nama,
-                   pb.tanggal      AS tgl_penyerahan,
+                   (SELECT MAX(pb.tanggal) FROM pengeluaran_barang_master pb
+                     WHERE (pb.barang_jadi_seq = m.barang_seq AND pb.batch_seq = m.seq)
+                        OR (pb.makloon_bj_seq = m.barang_seq AND pb.makloon_batch_seq = m.seq)) AS tgl_penyerahan,
                    max(pm.tanggal) AS karantina,
-                   fb.jumlah_fb::double precision AS batch_size
+                   COALESCE(m.batch_aktual, 0)::double precision AS batch_size
             FROM master_batch m
             JOIN master_barang b               ON b.seq  = m.barang_seq
             LEFT JOIN master_bentuk_sediaan bs ON bs.seq = b.bentuk_sediaan_seq
-            LEFT JOIN (
-                SELECT DISTINCT ON (barang_jadi_seq) barang_jadi_seq, jumlah_fb
-                FROM master_formula_barang_jadi
-                ORDER BY barang_jadi_seq, tanggal_formula DESC NULLS LAST, seq DESC
-            ) fb ON (fb.barang_jadi_seq = m.barang_seq)
             LEFT JOIN penerimaan_barang_detail pd
                    ON (m.seq = pd.batch_seq AND pd.barang_seq = m.barang_seq)
             LEFT JOIN penerimaan_barang_master pm
                    ON (pm.seq = pd.master_seq)
-            LEFT JOIN pengeluaran_barang_master pb
-                   ON (pb.barang_jadi_seq = m.barang_seq AND pb.batch_seq = m.seq
-                       AND pb.tanggal = (SELECT MAX(pb2.tanggal) FROM pengeluaran_barang_master pb2
-                                         WHERE pb2.barang_jadi_seq = m.barang_seq
-                                           AND pb2.batch_seq = m.seq))
             WHERE m.tgl_input >= :from::date
               AND m.tgl_input <  (:to::date + INTERVAL '1 day')
-            GROUP BY m.seq, m.no_batch, m.kode_batch, m.tgl_input, m.tgl_expired, b.kode, b.nama, bs.nama, pb.tanggal, fb.jumlah_fb
+            GROUP BY m.seq, m.barang_seq, m.no_batch, m.kode_batch, m.tgl_input, m.tgl_expired, m.batch_aktual, b.kode, b.nama, bs.nama
         ) d
         WHERE d.karantina IS NULL
         ORDER BY d.kode, d.tgl_input DESC

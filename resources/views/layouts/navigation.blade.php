@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('reports.wip-belum-proses') }}">
+                    <a href="{{ route('reports.stok-forecast') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
@@ -21,6 +21,14 @@
                     <x-nav-link :href="route('reports.toll-out')" :active="request()->routeIs('reports.toll-out')">
                         {{ __('Produk Toll Out') }}
                     </x-nav-link>
+                    @can('admin')
+                        <x-nav-link :href="route('log-login')" :active="request()->routeIs('log-login')">
+                            {{ __('Log Login') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('users')" :active="request()->routeIs('users')">
+                            {{ __('Kelola User') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -82,6 +90,14 @@
             <x-responsive-nav-link :href="route('reports.toll-out')" :active="request()->routeIs('reports.toll-out')">
                 {{ __('Produk Toll Out') }}
             </x-responsive-nav-link>
+            @can('admin')
+                <x-responsive-nav-link :href="route('log-login')" :active="request()->routeIs('log-login')">
+                    {{ __('Log Login') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users')" :active="request()->routeIs('users')">
+                    {{ __('Kelola User') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

@@ -1,7 +1,7 @@
 <div>
     <x-report-shell
         title="Produk Toll Out (Makloon)"
-        subtitle="Daftar kode produk yang diproduksi di luar/makloon. Dipakai untuk menandai baris di Monitoring Stok (sel DOI Belum Proses ≤ 80 hari → kuning).">
+        subtitle="Daftar kode produk yang diproduksi di luar/makloon. Dipakai untuk menandai baris di Monitoring Stok (sel MOI Belum Proses ≤ 2,7 bulan → kuning).">
 
         <x-slot name="actions">
             <a href="{{ route('reports.stok-forecast') }}"
@@ -37,8 +37,18 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="w-12 px-3 py-2 text-left font-semibold text-gray-600">No.</th>
-                        <th class="w-40 px-3 py-2 text-left font-semibold text-gray-600">Kode</th>
-                        <th class="px-3 py-2 text-left font-semibold text-gray-600">Nama Produk</th>
+                        <th wire:click="sortBy('kode')"
+                            class="w-40 px-3 py-2 text-left font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800">
+                            <span class="inline-flex items-center gap-1">Kode
+                                @if ($sortField === 'kode')<span class="text-gray-400">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </span>
+                        </th>
+                        <th wire:click="sortBy('nama')"
+                            class="px-3 py-2 text-left font-semibold text-gray-600 cursor-pointer select-none hover:text-gray-800">
+                            <span class="inline-flex items-center gap-1">Nama Produk
+                                @if ($sortField === 'nama')<span class="text-gray-400">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </span>
+                        </th>
                         <th class="w-24 px-3 py-2 text-right font-semibold text-gray-600">Aksi</th>
                     </tr>
                 </thead>

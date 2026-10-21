@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('reports.wip-belum-proses', absolute: false));
+        return redirect()->intended(route('reports.stok-forecast', absolute: false));
     }
 
     /**

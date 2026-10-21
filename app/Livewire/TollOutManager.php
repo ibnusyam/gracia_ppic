@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\TollOutProduct;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /**
@@ -19,6 +20,28 @@ class TollOutManager extends Component
 
     /** Pesan info (mis. kode tak ditemukan di master) yang tampil sekali setelah aksi. */
     public string $notice = '';
+
+    /** Kolom pengurutan tabel. Hanya 'kode' & 'nama' yang valid. */
+    #[Url]
+    public string $sortField = 'kode';
+
+    #[Url]
+    public string $sortDir = 'asc';
+
+    /** Klik header: toggle arah bila kolom sama, selain itu pindah kolom (mulai asc). */
+    public function sortBy(string $field): void
+    {
+        if (! in_array($field, ['kode', 'nama'], true)) {
+            return;
+        }
+
+        if ($this->sortField === $field) {
+            $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDir = 'asc';
+        }
+    }
 
     public function add(): void
     {
@@ -64,8 +87,12 @@ class TollOutManager extends Component
 
     public function render()
     {
+        // Validasi ulang di render supaya nilai dari URL yang di-utak-atik tetap aman.
+        $field = in_array($this->sortField, ['kode', 'nama'], true) ? $this->sortField : 'kode';
+        $dir = $this->sortDir === 'desc' ? 'desc' : 'asc';
+
         return view('livewire.toll-out-manager', [
-            'items' => TollOutProduct::orderBy('kode')->get(),
+            'items' => TollOutProduct::orderBy($field, $dir)->get(),
         ]);
     }
 }

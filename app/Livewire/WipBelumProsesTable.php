@@ -88,7 +88,7 @@ class WipBelumProsesTable extends Component
             // (via helper bersama) supaya ganti urutan tak perlu query ulang. Disimpan sebagai array
             // biasa (bukan stdClass) agar aman di-serialize oleh cache store, lalu di-rehidrasi.
             $cached = Cache::remember(
-                'wip_belum:'.$this->dateFrom.':'.$this->dateTo,
+                'wip_belum:v2:'.$this->dateFrom.':'.$this->dateTo,
                 now()->addMinutes(5),
                 fn () => array_map(fn ($r) => (array) $r, (new WipBelumProsesReport())->rows($this->dateFrom, $this->dateTo))
             );
